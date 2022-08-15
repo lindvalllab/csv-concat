@@ -1,0 +1,6 @@
+ccenv/
+__pychache__/
+dist/
+build/
+*.spec
+.vim
