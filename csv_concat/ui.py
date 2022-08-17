@@ -1,19 +1,16 @@
 import tkinter as tk
 from tkinter import filedialog, ttk
-from typing import Callable
+from concatenator import Concatenator
 
 
 class UserInterface:
-    def __init__(
-        self,
-        merge: Callable[[], None],
-    ):
+    def __init__(self) -> None:
         """
         merge: function that merges csv files
         """
-        self.merge = merge
         self.root = tk.Tk()
         self.root.title("CSV Merger")
+        self.concatenator = Concatenator([])
 
         # Important variables
         self.data_file_var = tk.StringVar(value='')
@@ -26,8 +23,10 @@ class UserInterface:
 
         file_label = ttk.Label(content, text="Files")
         columns_label = ttk.Label(content, text="Columns")
-        self.file_box = tk.Listbox(content, height=10, selectmode="extended")
-        self.columns_box = tk.Listbox(content, height=10)
+        self.file_box = tk.Listbox(content, height=10, state=tk.DISABLED)
+        self.columns_box = tk.Listbox(
+            content, height=10, selectmode="extended", exportselection=False
+        )
         self.select_files_button = ttk.Button(
             content,
             text="Select files",
@@ -35,7 +34,7 @@ class UserInterface:
         self.run_button = ttk.Button(
             content,
             text="Combine",
-            command=lambda: None)
+            command=self.combine)
 
         file_label.grid(column=0, row=0, sticky='s', pady=(5, 0))
         columns_label.grid(column=1, row=0, sticky='s', pady=(5, 0))
@@ -46,7 +45,7 @@ class UserInterface:
 
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(0, weight=1)
-        content.columnconfigure(0, weight=1)
+        content.columnconfigure(0, weight=3)
         content.columnconfigure(1, weight=1)
         content.rowconfigure(0, weight=0)
         content.rowconfigure(1, weight=1)
@@ -58,8 +57,22 @@ class UserInterface:
         self.root.mainloop()
 
     def open_files(self) -> None:
-        filenames = filedialog.askopenfilenames(
+        opened_files = filedialog.askopenfilenames(
             filetypes=[("Comma-separated files", "*.csv")]
         )
+        filenames = [] if opened_files == '' else opened_files
+        self.file_box.config(state=tk.NORMAL)
         self.file_box.delete(0, tk.END)
         self.file_box.insert(0, *filenames)
+        self.file_box.config(state=tk.DISABLED)
+        self.concatenator = Concatenator(filenames)
+        self.columns_box.insert(0, *self.concatenator.fieldnames)
+        self.columns_box.selection_set(0, tk.END)
+
+    def combine(self) -> None:
+        output_filename = filedialog.asksaveasfilename(
+            filetypes=[("Comma-separated files", "*.csv")]
+        )
+        if output_filename is not None:
+            with open(output_filename, 'w') as output_file:
+                self.concatenator.write_file(output_file)
