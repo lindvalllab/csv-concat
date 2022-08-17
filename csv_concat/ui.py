@@ -23,9 +23,17 @@ class UserInterface:
 
         file_label = ttk.Label(content, text="Files")
         columns_label = ttk.Label(content, text="Columns")
-        self.file_box = tk.Listbox(content, height=10, state=tk.DISABLED)
+        self.file_box = tk.Listbox(
+            content, height=10, state=tk.DISABLED, disabledforeground="black"
+        )
         self.columns_box = tk.Listbox(
-            content, height=10, selectmode="extended", exportselection=False
+            content,
+            height=10,
+            selectmode="extended",
+            exportselection=False,
+            selectbackground="white",
+            selectforeground="black",
+            foreground="gray"
         )
         self.select_files_button = ttk.Button(
             content,
