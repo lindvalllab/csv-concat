@@ -1,6 +1,6 @@
 import csv
 import os
-from typing import Sequence, TextIO
+from typing import List, Optional, Sequence, TextIO
 
 
 class Concatenator:
@@ -24,11 +24,12 @@ class Concatenator:
                         common_fieldnames &= set(reader.fieldnames)
             self.fieldnames = [field for field in first_fields if field in common_fieldnames]
 
-    def write_file(self, output_file: TextIO) -> None:
+    def write_file(self, output_file: TextIO, columns: Optional[List[int]] = None) -> None:
         writer = csv.writer(output_file, lineterminator=os.linesep)
-        writer.writerow(self.fieldnames)
+        fieldnames = self.fieldnames if columns is None else [self.fieldnames[i] for i in columns]
+        writer.writerow(fieldnames)
         for filename in self.filenames:
             with open(filename) as file:
                 reader = csv.DictReader(file)
                 for row in reader:
-                    writer.writerow([row[field] for field in self.fieldnames])
+                    writer.writerow([row[field] for field in fieldnames])

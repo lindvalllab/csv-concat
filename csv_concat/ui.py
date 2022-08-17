@@ -81,6 +81,7 @@ class UserInterface:
         output_filename = filedialog.asksaveasfilename(
             filetypes=[("Comma-separated files", "*.csv")]
         )
+        columns = self.columns_box.curselection()
         if output_filename is not None:
             with open(output_filename, 'w') as output_file:
-                self.concatenator.write_file(output_file)
+                self.concatenator.write_file(output_file, columns)
