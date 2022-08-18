@@ -5,6 +5,7 @@ from tkinter import filedialog, messagebox, ttk
 from typing import Callable
 
 from concatenator import Concatenator
+from _version import __version__
 
 
 class UserInterface:
@@ -13,7 +14,7 @@ class UserInterface:
         merge: function that merges csv files
         """
         self.root = tk.Tk()
-        self.root.title("CSV Merger")
+        self.root.title(f"CSV Concatenator v{__version__}")
         self.concatenator = Concatenator([])
 
         # Important variables
