@@ -1,0 +1,44 @@
+name: Build release
+
+on:
+  release:
+    types: [released]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [macos-latest, windows-latest, ubuntu-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.10
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.10
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+      - name: Build (linux)
+        run: pyinstaller -wF csv_concat/csv_concat.py -n csv-concat-linux-${{github.event.release.tag_name}}
+        if: ${{ matrix.os == 'ubuntu-latest' }}
+      - name: Build (macos)
+        run: |
+          pyinstaller -wF csv_concat/csv_concat.py -n csv-concat-${{github.event.release.tag_name}}
+          pushd dist
+          rm csv-concat-${{github.event.release.tag_name}} # keep only .app file for uploading
+          zip -r csv-concat-${{github.event.release.tag_name}}.app.zip csv-concat-${{github.event.release.tag_name}}.app
+          rm -r csv-concat-${{github.event.release.tag_name}}.app
+          popd
+        if: ${{ matrix.os == 'macos-latest' }}
+      - name: Build (windows)
+        run: pyinstaller -wF csv_concat/csv_concat.py -n csv-concat-${{github.event.release.tag_name}}
+        if: ${{ matrix.os == 'windows-latest' }}
+      - name: Upload build to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
