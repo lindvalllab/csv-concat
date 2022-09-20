@@ -2,20 +2,23 @@ import multiprocessing
 import sys
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-from typing import Callable
+from typing import Callable, List, Optional
 
 from concatenator import Concatenator
 from _version import __version__
 
 
 class UserInterface:
-    def __init__(self) -> None:
+    def __init__(self,
+                 process_function: Callable[[Concatenator, Optional[List[int]], str], None]
+                 ) -> None:
         """
         merge: function that merges csv files
         """
         self.root = tk.Tk()
         self.root.title(f"CSV Concatenator v{__version__}")
         self.concatenator = Concatenator([])
+        self.process_function = process_function
 
         # Important variables
         self.data_file_var = tk.StringVar(value='')
@@ -92,12 +95,10 @@ class UserInterface:
             self.select_files_button.config(state=tk.DISABLED)
             self.run_button.config(state=tk.DISABLED)
 
-            def process() -> None:
-                columns = self.columns_box.curselection()
-                with open(output_filename, 'w') as output_file:
-                    self.concatenator.write_file(output_file, columns)
-
-            thread = multiprocessing.Process(target=process)
+            thread = multiprocessing.Process(
+                target=self.process_function,
+                args=(self.concatenator, self.columns_box.curselection(), output_filename)
+            )
             thread.start()
 
             def on_finish() -> None:
