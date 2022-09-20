@@ -1,4 +1,4 @@
-# Date filter application
+# CSV concatenator
 
 The purpose of this application is to concatenate multiple CSV files, using only columns contained in all of them.
 
