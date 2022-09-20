@@ -79,6 +79,7 @@ class UserInterface:
         self.file_box.insert(0, *filenames)
         self.file_box.config(state=tk.DISABLED)
         self.concatenator = Concatenator(filenames)
+        self.columns_box.delete(0, tk.END)
         self.columns_box.insert(0, *self.concatenator.fieldnames)
         self.columns_box.selection_set(0, tk.END)
 
