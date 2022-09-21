@@ -30,7 +30,7 @@ jobs:
           pushd dist
           ls -la
           zip -r csv-concat-${{github.event.release.tag_name}}.app.zip csv-concat-${{github.event.release.tag_name}}.app
-          rm -r !(*.app.zip)
+          find . -type f ! -name '*.app.zip' -delete  # delete irrelevant files
           popd
         if: ${{ matrix.os == 'macos-latest' }}
       - name: Build (windows)
