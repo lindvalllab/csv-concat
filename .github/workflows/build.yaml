@@ -28,9 +28,9 @@ jobs:
         run: |
           pyinstaller -w csv_concat/csv_concat.py -n csv-concat-${{github.event.release.tag_name}}
           pushd dist
-          rm csv-concat-${{github.event.release.tag_name}} # keep only .app file for uploading
+          ls -la
           zip -r csv-concat-${{github.event.release.tag_name}}.app.zip csv-concat-${{github.event.release.tag_name}}.app
-          rm -r csv-concat-${{github.event.release.tag_name}}.app
+          rm -r !(*.app.zip)
           popd
         if: ${{ matrix.os == 'macos-latest' }}
       - name: Build (windows)
