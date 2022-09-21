@@ -26,7 +26,7 @@ jobs:
         if: ${{ matrix.os == 'ubuntu-latest' }}
       - name: Build (macos)
         run: |
-          pyinstaller -wF csv_concat/csv_concat.py -n csv-concat-${{github.event.release.tag_name}}
+          pyinstaller -w csv_concat/csv_concat.py -n csv-concat-${{github.event.release.tag_name}}
           pushd dist
           rm csv-concat-${{github.event.release.tag_name}} # keep only .app file for uploading
           zip -r csv-concat-${{github.event.release.tag_name}}.app.zip csv-concat-${{github.event.release.tag_name}}.app
